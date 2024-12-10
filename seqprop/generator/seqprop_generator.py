@@ -164,17 +164,17 @@ def st_sampled_softmax(logits):
 	with ops.name_scope("STSampledSoftmax") as namescope :
 		nt_probs = tf.nn.softmax(logits)
 		onehot_dim = logits.get_shape().as_list()[1]
-		sampled_onehot = tf.one_hot(tf.squeeze(tf.multinomial(logits, 1), 1), onehot_dim, 1.0, 0.0)
-		with tf.get_default_graph().gradient_override_map({'Ceil': 'Identity', 'Mul': 'STMul'}):
-			return tf.ceil(sampled_onehot * nt_probs)
+		sampled_onehot = tf.one_hot(tf.squeeze(tf.random.categorical(logits, 1), 1), onehot_dim, 1.0, 0.0)
+		with tf.compat.v1.get_default_graph().gradient_override_map({'Ceil': 'Identity', 'Mul': 'STMul'}):
+			return tf.math.ceil(sampled_onehot * nt_probs)
 
 def st_hardmax_softmax(logits):
 	with ops.name_scope("STHardmaxSoftmax") as namescope :
 		nt_probs = tf.nn.softmax(logits)
 		onehot_dim = logits.get_shape().as_list()[1]
 		sampled_onehot = tf.one_hot(tf.argmax(nt_probs, 1), onehot_dim, 1.0, 0.0)
-		with tf.get_default_graph().gradient_override_map({'Ceil': 'Identity', 'Mul': 'STMul'}):
-			return tf.ceil(sampled_onehot * nt_probs)
+		with tf.compat.v1.get_default_graph().gradient_override_map({'Ceil': 'Identity', 'Mul': 'STMul'}):
+			return tf.math.ceil(sampled_onehot * nt_probs)
 
 @ops.RegisterGradient("STMul")
 def st_mul(op, grad):
@@ -184,9 +184,9 @@ def st_sampled(logits):
 	with ops.name_scope("STSampled") as namescope :
 		#nt_probs = tf.nn.softmax(logits)
 		onehot_dim = logits.get_shape().as_list()[1]
-		sampled_onehot = tf.one_hot(tf.squeeze(tf.multinomial(logits, 1), 1), onehot_dim, 1.0, 0.0)
-		with tf.get_default_graph().gradient_override_map({'Ceil': 'Identity', 'Mul': 'STMul', 'Softmax' : 'Identity'}):
-			return tf.ceil(sampled_onehot * tf.nn.softmax(logits))
+		sampled_onehot = tf.one_hot(tf.squeeze(tf.random.categorical(logits, 1), 1), onehot_dim, 1.0, 0.0)
+		with tf.compat.v1.get_default_graph().gradient_override_map({'Ceil': 'Identity', 'Mul': 'STMul', 'Softmax' : 'Identity'}):
+			return tf.math.ceil(sampled_onehot * tf.nn.softmax(logits))
 
 #PWM Masking and Sampling helper functions
 
