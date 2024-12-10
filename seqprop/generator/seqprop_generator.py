@@ -10,6 +10,7 @@ import keras.losses
 
 import tensorflow as tf
 from tensorflow.python.framework import ops
+import tensorflow_probability as tfp
 
 import isolearn.keras as iso
 
@@ -234,7 +235,7 @@ def max_pwm(pwm_logits) :
 #Gumbel-Softmax (The Concrete Distribution) for annealed nucleotide sampling
 
 def gumbel_softmax(logits, temperature=0.1) :
-	gumbel_dist = tf.contrib.distributions.RelaxedOneHotCategorical(temperature, logits=logits)
+	gumbel_dist = tfp.distributions.RelaxedOneHotCategorical(temperature=temperature,logits=logits)
 	batch_dim = logits.get_shape().as_list()[0]
 	onehot_dim = logits.get_shape().as_list()[1]
 	return gumbel_dist.sample()
